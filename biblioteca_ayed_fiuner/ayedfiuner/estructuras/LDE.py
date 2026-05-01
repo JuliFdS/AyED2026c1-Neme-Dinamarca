@@ -6,10 +6,41 @@ class Nodo:
 
 class ListaDobleEnlazada:
     
+    """
+    El inicializador __init__ debe crear una lista originalmente vacía. 
+    El acceso a atributos debe realizarse con operaciones implementadas con decoradores properties.
+    """
     def __init__(self):
-        self.cabeza = None
-        self.cola = None
-        self.tamanio = 0
+        # Usamos guion bajo para indicar que son atributos "protegidos"
+        self._cabeza = None
+        self._cola = None
+        self._tamanio = 0
+
+    @property
+    def cabeza(self):
+        """Permite leer self.cabeza desde afuera"""
+        return self._cabeza
+
+    @cabeza.setter
+    def cabeza(self, nuevo_nodo):
+        """Permite asignar self.cabeza = nodo"""
+        self._cabeza = nuevo_nodo
+
+    @property
+    def cola(self):
+        return self._cola
+
+    @cola.setter
+    def cola(self, nuevo_nodo):
+        self._cola = nuevo_nodo
+
+    @property
+    def tamanio(self):
+        return self._tamanio
+
+    @tamanio.setter
+    def tamanio(self, valor):
+        self._tamanio = valor
     
     """
     esta_vacia(): Devuelve True si la lista está vacía.
