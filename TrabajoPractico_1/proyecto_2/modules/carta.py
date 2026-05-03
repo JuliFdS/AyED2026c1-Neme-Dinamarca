@@ -4,14 +4,13 @@ Created on Tue Aug  9 16:51:54 2022
 
 @author: Cátedra de Algoritmos y Estructura de Datos
 """
-
+# -*- coding: utf-8 -*-
 class Carta:
-    
     def __init__(self, valor='', palo=''):
         self.valor = valor
         self.palo = palo
-        self.visible:bool = False
-        
+        self._visible = False  # Cambiado para coincidir con la propiedad
+
     @property
     def visible(self):
         return self._visible
@@ -37,30 +36,31 @@ class Carta:
         self._palo = palo  
     
     def _valor_numerico(self):
-        valores = ['J','Q','K','A']
-        if self.valor in valores:
-            idx = valores.index(self.valor)
+        """Convierte J, Q, K, A a valores 11-14 para comparaciones."""
+        valores_letras = ['J','Q','K','A']
+        if self.valor in valores_letras:
+            idx = valores_letras.index(self.valor)
             return (11 + idx)
         return int(self.valor)            
             
-        
     def __gt__(self, otra):
-        """2 cartas deben compararse por su valor numérico"""
+        """Compara si una carta es mayor a otra por valor numérico."""
         return self._valor_numerico() > otra._valor_numerico()
+    
+    def __eq__(self, otra):
+        """Necesario para detectar el estado de 'Guerra' (empate)."""
+        return self._valor_numerico() == otra._valor_numerico()
         
     def __str__(self):
-        if self.visible == False:
+        if not self.visible:
             return "-X"
-        else:
-            return self.valor + self.palo
+        return f"{self.valor}{self.palo}"
     
     def __repr__(self):
         return str(self)
-    
-    
+
 if __name__ == "__main__":
-    carta = Carta("♣", "3")
-    print(carta)
+    # Corregido: Valor primero, luego Palo
+    carta = Carta("3", "♣")
     carta.visible = True
-    print(carta)
-    
+    print(f"Carta de prueba: {carta}")

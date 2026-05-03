@@ -4,7 +4,18 @@ Created on Thu Aug 11 09:32:57 2022
 
 @author: Cátedra de Algoritmos y Estructura de Datos
 """
+# -*- coding: utf-8 -*-
+import sys
+import os
 
+# BLOQUE PARA QUE EL PROFE CORRA SIN COMANDOS
+# Agregamos las rutas necesarias al sistema para que encuentre los módulos
+dir_actual = os.path.dirname(os.path.abspath(__file__))
+# Sube a 'proyecto_2' para que encuentre la carpeta 'modules'
+sys.path.append(os.path.abspath(os.path.join(dir_actual, '..')))
+# Sube hasta la raíz y entra en la biblioteca
+ruta_biblio = os.path.abspath(os.path.join(dir_actual, '..', '..', '..', 'biblioteca_ayed_fiuner'))
+sys.path.append(ruta_biblio)
 from modules.mazo import Mazo, DequeEmptyError
 from modules.carta import Carta
 import random
