@@ -1,13 +1,15 @@
-# 🐍Nombre del proyecto (darle un nombre significativo) 
+# Estructura de Datos: Lista Doble Enlazada (LDE) y Benchmarking
 
 Breve descripción del proyecto:
 
-Ejemplo: “Este es un script en el que se comparan algoritmos de ordenamiento. Permite [describir funcionalidades principales].
+Implementación desde cero de un TAD (Tipo Abstracto de Datos) de Lista Doble Enlazada en Python. Incluye un análisis empírico de complejidad temporal mediante mediciones de tiempo real para validar la eficiencia teórica de los métodos implementados.
 
 ---
 ## 🏗Arquitectura General
 
-Explica brevemente cómo está organizado el código (funciones y/o clases)
+LDE.py: Contiene la clase Nodo y la clase ListaDobleEnlazada. Implementa punteros a la cabeza y a la cola para garantizar operaciones O(1).
+
+benmarking_LDE.py: Script de pruebas de rendimiento que genera gráficas comparativas entre métodos de costo constante (O(1)) y lineal (O(n)).
 
 Las gráficas de los resultados están disponible en la carpeta [data](./data) del proyecto.
 
@@ -16,9 +18,11 @@ El informe completo está disponible en la carpeta [docs](./docs) del proyecto.
 ---
 ## 📑Dependencias
 
-1. **Python 3.x**
+1. **Python 3.14**
 2. **matplotlib** (`pip install matplotlib`)
-3. listar dependencias principales
+3. random (módulo estándar de Python)
+4. time (módulo estándar de Python)
+5. os / sys (para gestión de rutas)
 4. Dependencias listadas en requierements.txt
 
 ---
@@ -36,8 +40,8 @@ El informe completo está disponible en la carpeta [docs](./docs) del proyecto.
 ---
 ## 🙎‍♀️🙎‍♂️Autores
 
-- Apellido y Nombre del primer integrante
-- Apellido y Nombre del primer integrante
+- Dinamarca Daiana Nicole
+- Neme Ferrari del Sel Julian Bautista
 
 ---
 

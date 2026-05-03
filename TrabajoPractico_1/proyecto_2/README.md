@@ -1,13 +1,19 @@
-# 🐍Nombre del proyecto (darle un nombre significativo) 
+# Simulador de Cartas: El Juego de "Guerra"
 
 Breve descripción del proyecto:
 
-Ejemplo: “Este es un script en el que se comparan algoritmos de ordenamiento. Permite [describir funcionalidades principales].
+Simulación del juego de cartas azaroso "Guerra". El sistema utiliza una Lista Doble Enlazada para gestionar el mazo de cada jugador funcionando bajo una lógica de cola (FIFO) para el reparto y recolección de cartas durante las batallas.
 
 ---
 ## 🏗Arquitectura General
 
-Explica brevemente cómo está organizado el código (funciones y/o clases)
+carta.py: Define la clase Carta con lógica de comparación de valores.
+
+mazo.py: Implementa el mazo de los jugadores utilizando la ListaDobleEnlazada personalizada. Define la excepción DequeEmptyError.
+
+juego_guerra.py: Contiene el motor del juego, gestionaando turnos, empates y el estado de "Guerra".
+
+test_juego_guerra.py / test_mazo.py: Conjunto de pruebas unitarias para asegurar la correctitud del flujo.
 
 Las gráficas de los resultados están disponible en la carpeta [data](./data) del proyecto.
 
@@ -16,9 +22,11 @@ El informe completo está disponible en la carpeta [docs](./docs) del proyecto.
 ---
 ## 📑Dependencias
 
-1. **Python 3.x**
+1. **Python 3.14**
 2. **matplotlib** (`pip install matplotlib`)
-3. listar dependencias principales
+3. random (módulo estándar de Python)
+4. time (módulo estándar de Python)
+5. os / sys (para gestión de rutas)
 4. Dependencias listadas en requierements.txt
 
 ---
@@ -36,8 +44,8 @@ El informe completo está disponible en la carpeta [docs](./docs) del proyecto.
 ---
 ## 🙎‍♀️🙎‍♂️Autores
 
-- Apellido y Nombre del primer integrante
-- Apellido y Nombre del primer integrante
+- Dinamarca, Daiana Nicole
+- Neme Ferrari del Sel, Julian Bautista
 
 ---
 

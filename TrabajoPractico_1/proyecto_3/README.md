@@ -1,13 +1,15 @@
-# 🐍Nombre del proyecto (darle un nombre significativo) 
+# Comparativa de Algoritmos de Ordenamiento
 
 Breve descripción del proyecto:
 
-Ejemplo: “Este es un script en el que se comparan algoritmos de ordenamiento. Permite [describir funcionalidades principales].
+Implementación y comparación de performance de tres algoritmos de ordenamiento: Burbuja, Quicksort y Radix Sort. Se incluye una comparativa contra el método sorted() nativo de Python.
 
 ---
 ## 🏗Arquitectura General
 
-Explica brevemente cómo está organizado el código (funciones y/o clases)
+ordenamiento.py: Clase Ordenador con los métodos estáticos para cada algoritmo.
+
+main.py: Script principal que genera datos aleatorios de 5 dígitos y ejecuta el benchmarking, generando una gráfica comparativa de tiempos bs. tamaño de entrada (N).
 
 Las gráficas de los resultados están disponible en la carpeta [data](./data) del proyecto.
 
@@ -16,9 +18,11 @@ El informe completo está disponible en la carpeta [docs](./docs) del proyecto.
 ---
 ## 📑Dependencias
 
-1. **Python 3.x**
+1. **Python 3.14**
 2. **matplotlib** (`pip install matplotlib`)
-3. listar dependencias principales
+3. random (módulo estándar de Python)
+4. time (módulo estándar de Python)
+5. os / sys (para gestión de rutas)
 4. Dependencias listadas en requierements.txt
 
 ---
@@ -36,8 +40,8 @@ El informe completo está disponible en la carpeta [docs](./docs) del proyecto.
 ---
 ## 🙎‍♀️🙎‍♂️Autores
 
-- Apellido y Nombre del primer integrante
-- Apellido y Nombre del primer integrante
+- Dinamarca Daiana Nicole
+- Neme Ferrari del Sel Julian Bautista
 
 ---
 
