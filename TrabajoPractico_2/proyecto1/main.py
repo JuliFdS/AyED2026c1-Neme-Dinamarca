@@ -1,49 +1,55 @@
 # -*- coding: utf-8 -*-
-"""
-Sala de emergencias
-"""
-
+import sys
+import os
 import time
-import datetime
-import modules.paciente as pac
-import random
 
-n = 20  # cantidad de ciclos de simulación
+# Ajuste de ruta para poder importar desde la biblioteca y desde modules
+# Esto asegura que Python encuentre tus archivos sin importar desde dónde ejecutes
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'modules')))
 
-cola_de_espera = list()
+from TrabajoPractico_2.proyecto1.modules.paciente import Paciente
+from biblioteca_ayed_fiuner.ayedfiuner.estructuras.heap import ColaPrioridad
 
-# Ciclo que gestiona la simulación
-for i in range(n):
-    # Fecha y hora de entrada de un paciente
-    ahora = datetime.datetime.now()
-    fecha_y_hora = ahora.strftime('%d/%m/%Y %H:%M:%S')
-    print('-*-'*15)
-    print('\n', fecha_y_hora, '\n')
-
-    # Se crea un paciente un paciente por segundo
-    # La criticidad del paciente es aleatoria
-    paciente = pac.Paciente()
-    cola_de_espera.append(paciente)
-
-    # Atención de paciente en este ciclo: en el 50% de los casos
-    if random.random() < 0.5:
-        # se atiende paciente que se encuentra al frente de la cola
-        paciente_atendido = cola_de_espera.pop(0)
-        print('*'*40)
-        print('Se atiende el paciente:', paciente_atendido)
-        print('*'*40)
-    else:
-        # se continúa atendiendo paciente de ciclo anterior
-        pass
+def simular_sala_emergencias(cantidad_pacientes=10):
+    print("="*60)
+    print(" SIMULACIÓN DE SALA DE EMERGENCIAS (TRIAJE) ")
+    print("="*60)
     
-    print()
+    cola_triage = ColaPrioridad()
+    pacientes_ingresados = []
 
-    # Se muestran los pacientes restantes en la cola de espera
-    print('Pacientes que faltan atenderse:', len(cola_de_espera))
-    for paciente in cola_de_espera:
-        print('\t', paciente)
-    
-    print()
-    print('-*-'*15)
-    
-    time.sleep(1)
+    # 1. Fase de Ingreso (Simulamos la llegada aleatoria)
+    print(f"\n[1] Ingresando {cantidad_pacientes} pacientes a la sala...")
+    print("-" * 60)
+    for _ in range(cantidad_pacientes):
+        p = Paciente()  # Se genera con datos aleatorios
+        pacientes_ingresados.append(p)
+        cola_triage.insertar(p)
+        print(f" LLEGADA: {p}")
+        # Pequeña pausa para que el contador de tiempo/llegada sea realista
+        time.sleep(0.01)
+
+    # 2. Fase de Atención (Aquí se ve la magia de la estructura)
+    print("\n" + "="*60)
+    print(" ATENCIÓN MÉDICA (ORDEN SEGÚN PRIORIDAD) ")
+    print("="*60)
+    print("Regla: 1-Crítico > 2-Moderado > 3-Bajo. (Empate -> FIFO)")
+    print("-" * 60)
+
+    contador = 1
+    while not cola_triage.esta_vacia():
+        try:
+            paciente_atendido = cola_triage.extraer_minimo()
+            print(f" Atendiendo #{contador}: {paciente_atendido}")
+            contador += 1
+        except IndexError as e:
+            print(f"Error inesperado: {e}")
+
+    print("\n" + "="*60)
+    print(" Simulación finalizada. Todos los pacientes atendidos. ")
+    print("="*60)
+
+if __name__ == "__main__":
+    # Puedes cambiar el número para probar con más o menos pacientes
+    simular_sala_emergencias(cantidad_pacientes=12)
