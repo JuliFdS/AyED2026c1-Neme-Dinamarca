@@ -1,16 +1,11 @@
 from datetime import datetime
 from mediciones import Medicion
+from arbol_avl import ArbolAVL
 
-class NodoAVL:
-    def __init__(self, medicion):
-        self.dato = medicion # El nodo guarda un objeto Medicion
-        self.izq = None
-        self.der = None
-        self.altura = 1
 
 class Temperaturas_DB:
     def __init__(self):
-        self.raiz = None
+        self._arbol = ArbolAVL()
         self.tamanio = 0
 
     def guardar_temperatura(self, temperatura, fecha_str):
@@ -37,7 +32,10 @@ class Temperaturas_DB:
         """
         try:
             fecha = datetime.strptime(fecha_str, "%d/%m/%Y")
-            fue_nuevo, self.raiz = self._insertar(self.raiz, fecha, float(temperatura))
+            nueva_medicion = Medicion(fecha, float(temperatura)) 
+
+            fue_nuevo = self._arbol.insertar(fecha, nueva_medicion)
+
             if fue_nuevo:
                 self.tamanio += 1
         except ValueError:
@@ -62,8 +60,8 @@ class Temperaturas_DB:
         """
         try:
             fecha_dt = datetime.strptime(fecha_str, "%d/%m/%Y")
-            nodo = self._buscar(self.raiz, fecha_dt)
-            return nodo.dato.temperatura if nodo else None
+            medicion = self._arbol.buscar(fecha_dt)
+            return medicion.valor if medicion else None
         except ValueError:
             return None
         
@@ -150,8 +148,8 @@ class Temperaturas_DB:
         """
         try:
             fecha = datetime.strptime(fecha_str, "%d/%m/%Y")
-            if self._buscar(self.raiz, fecha):
-                self.raiz = self._eliminar(self.raiz, fecha)
+            se_elimino = self._arbol.eliminar(fecha)
+            if se_elimino:
                 self.tamanio -= 1
             else:
                 print(f"La fecha {fecha_str} no existe en la base de datos.")
@@ -180,8 +178,8 @@ class Temperaturas_DB:
             f1 = datetime.strptime(f1_str, "%d/%m/%Y")
             f2 = datetime.strptime(f2_str, "%d/%m/%Y")
             resultados = []
-            self._rango_inorder(self.raiz, f1, f2, resultados)
-            return [str(n.dato) for n in resultados]
+            mediciones_en_rango = self._arbol.obtener_rango(f1, f2)
+            return [str(m) for m in mediciones_en_rango]
         except ValueError:
             return []
 
@@ -200,121 +198,13 @@ class Temperaturas_DB:
         """
         return self.tamanio
 
-    # --- Lógica Interna del AVL ---
-    
-    def _get_altura(self, nodo):
-        return nodo.altura if nodo else 0
-
-    def _get_balance(self, nodo):
-        return self._get_altura(nodo.izq) - self._get_altura(nodo.der) if nodo else 0
-
-    def _rotar_derecha(self, y):
-        x = y.izq
-        T2 = x.der
-        x.der = y
-        y.izq = T2
-        y.altura = 1 + max(self._get_altura(y.izq), self._get_altura(y.der))
-        x.altura = 1 + max(self._get_altura(x.izq), self._get_altura(x.der))
-        return x
-
-    def _rotar_izquierda(self, x):
-        y = x.der
-        T2 = y.izq
-        y.izq = x
-        x.der = T2
-        x.altura = 1 + max(self._get_altura(x.izq), self._get_altura(x.der))
-        y.altura = 1 + max(self._get_altura(y.izq), self._get_altura(y.der))
-        return y
-
-    def _rebalancear(self, nodo):
-        nodo.altura = 1 + max(self._get_altura(nodo.izq), self._get_altura(nodo.der))
-        balance = self._get_balance(nodo)
-
-        # Caso Izquierda-Izquierda o Izquierda-Derecha
-        if balance > 1:
-            if self._get_balance(nodo.izq) < 0:
-                nodo.izq = self._rotar_izquierda(nodo.izq)
-            return self._rotar_derecha(nodo)
-        
-        # Caso Derecha-Derecha o Derecha-Izquierda
-        if balance < -1:
-            if self._get_balance(nodo.der) > 0:
-                nodo.der = self._rotar_derecha(nodo.der)
-            return self._rotar_izquierda(nodo)
-        
-        return nodo
-
-    def _insertar(self, nodo, fecha, temp):
-        if not nodo: 
-            # Creamos el objeto Medicion e instanciamos el NodoAVL
-            return True, NodoAVL(Medicion(fecha, temp))
-        
-        nuevo = False
-        if fecha < nodo.dato.fecha:
-            nuevo, nodo.izq = self._insertar(nodo.izq, fecha, temp)
-        elif fecha > nodo.dato.fecha:
-            nuevo, nodo.der = self._insertar(nodo.der, fecha, temp)
-        else: 
-            # Si la fecha ya existe, se actualiza el valor dentro del objeto Medicion
-            nodo.dato.temperatura = temp
-            return False, nodo
-
-        return nuevo, self._rebalancear(nodo)
-
-    def _eliminar(self, nodo, fecha):
-        if not nodo: 
-            return None
-
-        if fecha < nodo.dato.fecha:
-            nodo.izq = self._eliminar(nodo.izq, fecha)
-        elif fecha > nodo.dato.fecha:
-            nodo.der = self._eliminar(nodo.der, fecha)
-        else:
-            # Caso con un solo hijo o ninguno
-            if not nodo.izq: 
-                return nodo.der
-            if not nodo.der: 
-                return nodo.izq
-            
-            # Caso con dos hijos: buscar el sucesor en inorden (el menor del subárbol derecho)
-            temp_sucesor = self._min_valor_nodo(nodo.der)
-            nodo.dato = temp_sucesor.dato # Reemplazamos la medición completa
-            nodo.der = self._eliminar(nodo.der, temp_sucesor.dato.fecha)
-
-        return self._rebalancear(nodo)
-
-    def _min_valor_nodo(self, nodo):
-        actual = nodo
-        while actual.izq: 
-            actual = actual.izq
-        return actual
-
-    # --- Auxiliares para búsqueda y rangos ---
+    # Método auxilar
 
     def _obtener_lista_rango(self, f1_str, f2_str):
         try:
             f1 = datetime.strptime(f1_str, "%d/%m/%Y")
             f2 = datetime.strptime(f2_str, "%d/%m/%Y")
-            nodos = []
-            self._rango_inorder(self.raiz, f1, f2, nodos)
-            return [n.dato.temperatura for n in nodos]
+            mediciones = self._arbol.obtener_rango(f1, f2)
+            return [m.temperatura for m in mediciones]
         except ValueError:
-            print("Error: Rango de fechas inválido.")
             return []
-
-    def _rango_inorder(self, nodo, f1, f2, lista):
-        if not nodo: 
-            return
-        if f1 < nodo.dato.fecha:
-            self._rango_inorder(nodo.izq, f1, f2, lista)
-        if f1 <= nodo.dato.fecha <= f2:
-            lista.append(nodo)
-        if f2 > nodo.dato.fecha:
-            self._rango_inorder(nodo.der, f1, f2, lista)
-
-    def _buscar(self, nodo, fecha):
-        if not nodo or nodo.dato.fecha == fecha: 
-            return nodo
-        if fecha < nodo.dato.fecha: 
-            return self._buscar(nodo.izq, fecha)
-        return self._buscar(nodo.der, fecha)
