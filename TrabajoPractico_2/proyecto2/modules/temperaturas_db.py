@@ -1,6 +1,6 @@
 from datetime import datetime
-from mediciones import Medicion
-from arbol_avl import ArbolAVL
+from modules.mediciones import Medicion
+from modules.arbol_avl import ArbolAVL
 
 
 class Temperaturas_DB:
@@ -61,7 +61,7 @@ class Temperaturas_DB:
         try:
             fecha_dt = datetime.strptime(fecha_str, "%d/%m/%Y")
             medicion = self._arbol.buscar(fecha_dt)
-            return medicion.valor if medicion else None
+            return medicion.temperatura if medicion else None
         except ValueError:
             return None
         
