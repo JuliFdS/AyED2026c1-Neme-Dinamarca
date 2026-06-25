@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 from random import randint, choices
 
@@ -70,7 +69,8 @@ class Paciente:
                 self.__orden_llegada == otro.__orden_llegada)
 
     def __str__(self):
-        # Representación amigable para la consola
-        return (f"{self.__nombre} {self.__apellido}".ljust(20) + 
-                f" | Riesgo: {self.__riesgo}-{self.__descripcion.upper()}".ljust(25) + 
-                f" | Orden: {self.__orden_llegada}")
+        cad = self.__nombre + ' '
+        cad += self.__apellido + '\t -> '
+        cad += str(self.__riesgo) + '-' + self.__descripcion
+        cad += f' (orden de llegada: {self.__orden_llegada})'
+        return cad

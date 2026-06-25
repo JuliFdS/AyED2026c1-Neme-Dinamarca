@@ -1,55 +1,73 @@
 # -*- coding: utf-8 -*-
+"""
+Sala de emergencias
+
+Esta es una adaptación del simulador original provisto por la cátedra
+(TP2_problema1/main.py). Se conserva exactamente la misma lógica de
+simulación por ciclos (un paciente nuevo por ciclo, atención con 50% de
+probabilidad), cambiando únicamente la estructura de almacenamiento de la
+cola de espera: en lugar de una lista que atiende siempre al primero en
+llegar (FIFO, vía cola_de_espera.pop(0)), se utiliza la ColaPrioridad
+(Min-Heap) genérica de la biblioteca, de modo que en cada atención se
+seleccione siempre al paciente de mayor urgencia (menor nivel de riesgo)
+y, en caso de empate, al que llegó primero.
+"""
 import sys
 import os
 import time
+import datetime
+import random
 
 # Ajuste de ruta para poder importar desde la biblioteca y desde modules
-# Esto asegura que Python encuentre tus archivos sin importar desde dónde ejecutes
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'modules')))
 
-from TrabajoPractico_2.proyecto1.modules.paciente import Paciente
+import modules.paciente as pac
 from biblioteca_ayed_fiuner.ayedfiuner.estructuras.heap import ColaPrioridad
 
-def simular_sala_emergencias(cantidad_pacientes=10):
-    print("="*60)
-    print(" SIMULACIÓN DE SALA DE EMERGENCIAS (TRIAJE) ")
-    print("="*60)
-    
-    cola_triage = ColaPrioridad()
-    pacientes_ingresados = []
+n = 20  # cantidad de ciclos de simulación
 
-    # 1. Fase de Ingreso (Simulamos la llegada aleatoria)
-    print(f"\n[1] Ingresando {cantidad_pacientes} pacientes a la sala...")
-    print("-" * 60)
-    for _ in range(cantidad_pacientes):
-        p = Paciente()  # Se genera con datos aleatorios
-        pacientes_ingresados.append(p)
-        cola_triage.insertar(p)
-        print(f" LLEGADA: {p}")
-        # Pequeña pausa para que el contador de tiempo/llegada sea realista
-        time.sleep(0.01)
+"""
+Antes: cola_de_espera = list()  --> estructura FIFO original.
+Ahora: se reemplaza por la ColaPrioridad genérica (Min-Heap), que
+selecciona siempre al paciente más urgente en O(log n).
+"""
+cola_de_espera = ColaPrioridad()
 
-    # 2. Fase de Atención (Aquí se ve la magia de la estructura)
-    print("\n" + "="*60)
-    print(" ATENCIÓN MÉDICA (ORDEN SEGÚN PRIORIDAD) ")
-    print("="*60)
-    print("Regla: 1-Crítico > 2-Moderado > 3-Bajo. (Empate -> FIFO)")
-    print("-" * 60)
+# Ciclo que gestiona la simulación
+for i in range(n):
+    # Fecha y hora de entrada de un paciente
+    ahora = datetime.datetime.now()
+    fecha_y_hora = ahora.strftime('%d/%m/%Y %H:%M:%S')
 
-    contador = 1
-    while not cola_triage.esta_vacia():
-        try:
-            paciente_atendido = cola_triage.extraer_minimo()
-            print(f" Atendiendo #{contador}: {paciente_atendido}")
-            contador += 1
-        except IndexError as e:
-            print(f"Error inesperado: {e}")
+    print('-*-' * 15)
+    print('\n', fecha_y_hora, '\n')
 
-    print("\n" + "="*60)
-    print(" Simulación finalizada. Todos los pacientes atendidos. ")
-    print("="*60)
+    # Se crea un paciente por ciclo
+    # La criticidad del paciente es aleatoria
+    paciente = pac.Paciente()
+    cola_de_espera.insertar(paciente)
 
-if __name__ == "__main__":
-    # Puedes cambiar el número para probar con más o menos pacientes
-    simular_sala_emergencias(cantidad_pacientes=12)
+    # Atención de paciente en este ciclo: en el 50% de los casos
+    if random.random() < 0.5 and not cola_de_espera.esta_vacia():
+        # Antes: se atendía al paciente que se encontraba al frente de la
+        # lista (cola_de_espera.pop(0)), es decir, por orden de llegada.
+        # Ahora: se atiende siempre al paciente de mayor prioridad
+        # (menor nivel de riesgo); en caso de empate, al que llegó primero.
+        paciente_atendido = cola_de_espera.extraer_minimo()
+        print('*' * 40)
+        print('Se atiende el paciente:', paciente_atendido)
+        print('*' * 40)
+    else:
+        # se continúa atendiendo paciente de ciclo anterior
+        pass
+
+    print()
+    # Se muestran los pacientes restantes en la cola de espera
+    print('Pacientes que faltan atenderse:', len(cola_de_espera))
+    for paciente_pendiente in cola_de_espera:
+        print('\t', paciente_pendiente)
+
+    print()
+    print('-*-' * 15)
+    time.sleep(1)
