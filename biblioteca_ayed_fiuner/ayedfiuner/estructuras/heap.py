@@ -1,25 +1,51 @@
 # -*- coding: utf-8 -*-
+from .monticulo import Monticulo
+
 
 class ColaPrioridad:
     """
-    Estructura de datos de Cola de Prioridad implementada con un Montículo Binario (Min-Heap).
-    Permite insertar elementos y extraer siempre el 'menor' (el de mayor prioridad).
-    Complejidad:
+    TAD Cola de Prioridad.
+
+    Estructura de datos que permite insertar elementos y extraer siempre
+    el de mayor prioridad (el "menor", según el operador < de los
+    elementos almacenados).
+
+    Esta clase NO implementa por sí misma la lógica de un montículo
+    binario: en su lugar, utiliza por composición un Monticulo (ver
+    ayedfiuner.estructuras.monticulo), delegándole todo el trabajo
+    estructural. De este modo, ColaPrioridad encapsula el funcionamiento
+    interno del montículo y expone únicamente la interfaz propia de una
+    cola de prioridad. Si en el futuro se decidiera cambiar la
+    implementación interna (por ejemplo, usar una lista ordenada o un
+    árbol balanceado en lugar de un montículo), el código que utiliza
+    ColaPrioridad no se vería afectado.
+
+    Complejidad (heredada del Monticulo subyacente):
         - Inserción: O(log n)
         - Eliminación: O(log n)
     """
 
     def __init__(self):
-        # Usamos una lista para representar el árbol binario completo
-        self.__elementos = []
+        # Composición: la Cola de Prioridad utiliza internamente un
+        # Montículo, pero no lo expone hacia afuera.
+        self.__monticulo = Monticulo()
 
     def esta_vacia(self):
         """Retorna True si la cola no tiene elementos."""
-        return len(self.__elementos) == 0
+        return self.__monticulo.esta_vacio()
 
     def __len__(self):
         """Retorna la cantidad de elementos en la cola."""
-        return len(self.__elementos)
+        return len(self.__monticulo)
+
+    def __iter__(self):
+        """
+        Permite recorrer los elementos actualmente en la cola sin extraerlos
+        (de solo lectura). No garantiza orden de prioridad en el recorrido,
+        solo expone el contenido interno de la cola para fines de
+        visualización (por ejemplo, listar los pacientes pendientes).
+        """
+        return iter(self.__monticulo)
 
     def insertar(self, item):
         """
@@ -27,59 +53,18 @@ class ColaPrioridad:
         Pre: item debe ser comparable con los elementos ya existentes.
         Post: El elemento se ubica en su posición correspondiente según su prioridad.
         """
-        self.__elementos.append(item)
-        self.__flotar(len(self.__elementos) - 1)
+        self.__monticulo.insertar(item)
 
     def extraer_minimo(self):
         """
         Elimina y retorna el elemento con mayor prioridad (el menor).
         Pre: La cola no debe estar vacía.
-        Post: Retorna el elemento y reestructura el montículo.
+        Post: Retorna el elemento y reestructura la cola internamente.
         """
         if self.esta_vacia():
             raise IndexError("Error: Intento de extraer de una cola de prioridad vacía.")
-        
-        # El mínimo siempre está en la raíz (índice 0)
-        # Intercambiamos la raíz con el último elemento para poder eliminarlo
-        self.__intercambiar(0, len(self.__elementos) - 1)
-        minimo = self.__elementos.pop()
-        
-        # Si quedó algo, hundimos la nueva raíz para restaurar el orden
-        if not self.esta_vacia():
-            self.__hundir(0)
-            
-        return minimo
-
-    def __flotar(self, i):
-        """Mueve el elemento en el índice i hacia arriba hasta su lugar."""
-        padre = (i - 1) // 2
-        # Si el elemento es 'menor' (más prioritario) que su padre, sube
-        if i > 0 and self.__elementos[i] < self.__elementos[padre]:
-            self.__intercambiar(i, padre)
-            self.__flotar(padre)
-
-    def __hundir(self, i):
-        """Mueve el elemento en el índice i hacia abajo hasta su lugar."""
-        izq = 2 * i + 1
-        der = 2 * i + 2
-        menor = i
-        n = len(self.__elementos)
-
-        # Buscamos cuál es el más pequeño entre el nodo actual y sus hijos
-        if izq < n and self.__elementos[izq] < self.__elementos[menor]:
-            menor = izq
-        if der < n and self.__elementos[der] < self.__elementos[menor]:
-            menor = der
-
-        # Si un hijo es menor, intercambiamos y seguimos hundiendo
-        if menor != i:
-            self.__intercambiar(i, menor)
-            self.__hundir(menor)
-
-    def __intercambiar(self, i, j):
-        """Método auxiliar para intercambiar dos elementos en la lista."""
-        self.__elementos[i], self.__elementos[j] = self.__elementos[j], self.__elementos[i]
+        return self.__monticulo.extraer_minimo()
 
     def __str__(self):
         """Representación simple para depuración."""
-        return str([str(x) for x in self.__elementos])
+        return str(self.__monticulo)
