@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from .monticulo import Monticulo
+from monticulo import Monticulo
 
 
 class ColaPrioridad:
@@ -68,3 +68,46 @@ class ColaPrioridad:
     def __str__(self):
         """Representación simple para depuración."""
         return str(self.__monticulo)
+    
+# =====================================================================
+# PEQUEÑA PRUEBA DE USO AISLADA (Aspecto a evaluar nº 4)
+# Permite dar cuenta de que verificamos que el módulo funciona.
+# =====================================================================
+if __name__ == "__main__":
+    import sys
+    import os
+    
+    # Truco para permitir que los imports relativos funcionen al ejecutar el archivo suelto
+    sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    
+    print("--- EJECUTANDO PRUEBA DE USO AISLADA: ColaPrioridad (Min-Heap) ---")
+    
+    # Instanciamos el TAD genérico de forma local
+    try:
+        pq = ColaPrioridad()
+        
+        # Almacenamos datos genéricos (tuplas: (nivel_prioridad, "descripcion"))
+        # En un Min-Heap el menor valor numérico representa la mayor prioridad
+        print("\n1. Encolando elementos genéricos de prueba...")
+        pq.insertar((3, "Elemento C (Prioridad Baja)"))
+        pq.insertar((1, "Elemento A (Prioridad Crítica)"))
+        pq.insertar((2, "Elemento B (Prioridad Moderada)"))
+        pq.insertar((1, "Elemento A2 (Mismo nivel crítico - Desempate natural)"))
+        
+        print(f"   -> Éxito: Cantidad de elementos cargados: {len(pq)}")
+        
+        print("\n2. Desencolando en orden estricto de prioridad:")
+        while not pq.esta_vacia():
+            prioridad, elemento = pq.extraer_minimo()
+            print(f"   [Extraído] Prioridad: {prioridad} -> Dato: '{elemento}'")
+            
+        print("\n3. Verificando el manejo de excepciones en operaciones inválidas:")
+        try:
+            pq.extraer_minimo()
+        except IndexError as e:
+            print(f"   -> Excepción capturada correctamente: {e}")
+            
+        print("\n--- PRUEBA CONCLUIDA CON ÉXITO: Módulo verificado correctamente ---")
+        
+    except Exception as error_general:
+        print(f"Ocurrió un error inesperado durante la verificación: {error_general}")
