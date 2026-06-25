@@ -1,6 +1,17 @@
 # -*- coding: utf-8 -*-
-from monticulo import Monticulo
-
+import sys
+import os
+try:
+    # Si se ejecuta desde el main.py general (dentro del paquete)
+    from .monticulo import Monticulo
+except (ImportError, ValueError):
+    try:
+        # Si se ejecuta de forma aislada para la prueba del módulo heap.py
+        from monticulo import Monticulo
+    except ImportError:
+        # Alternativa de respaldo para asegurar la localización en el path
+        sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+        from monticulo import Monticulo
 
 class ColaPrioridad:
     """
